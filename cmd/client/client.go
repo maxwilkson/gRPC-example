@@ -7,21 +7,22 @@ import (
 	"log"
 	"time"
 
-	"github.com/codeedu/fc2-grpc/pb"
+	"github.com/maxwilkson/grpc-example/pb"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	connection, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	connection, err := grpc.Dial("localhost:50021", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Could not connect to gRPC Server: %v", err)
 	}
+
 	defer connection.Close()
 
 	client := pb.NewUserServiceClient(connection)
-	// AddUser(client)
-	// AddUserVerbose(client)
-	// AddUsers(client)
+	//AddUser(client)
+	//AddUserVerbose(client)
+	//AddUsers(client)
 	AddUserStreamBoth(client)
 
 }
@@ -29,14 +30,17 @@ func main() {
 func AddUser(client pb.UserServiceClient) {
 	req := &pb.User{
 		Id:    "0",
-		Name:  "Joao",
-		Email: "j@j.com",
+		Name:  "João",
+		Email: "joao@email.com",
 	}
+
 	res, err := client.AddUser(context.Background(), req)
 	if err != nil {
 		log.Fatalf("Could not make gRPC request: %v", err)
 	}
+
 	fmt.Println(res)
+
 }
 
 func AddUserVerbose(client pb.UserServiceClient) {
@@ -67,29 +71,29 @@ func AddUserVerbose(client pb.UserServiceClient) {
 func AddUsers(client pb.UserServiceClient) {
 	reqs := []*pb.User{
 		&pb.User{
-			Id:    "w1",
-			Name:  "Wesley",
-			Email: "wes@wes.com",
+			Id:    "1",
+			Name:  "João",
+			Email: "joao@email.com",
 		},
 		&pb.User{
-			Id:    "w2",
-			Name:  "Wesley 2",
-			Email: "wes2@wes.com",
+			Id:    "2",
+			Name:  "Maria",
+			Email: "maria@email.com",
 		},
 		&pb.User{
-			Id:    "w3",
-			Name:  "Wesley 3",
-			Email: "wes3@wes.com",
+			Id:    "3",
+			Name:  "José",
+			Email: "jose@email.com",
 		},
 		&pb.User{
-			Id:    "w4",
-			Name:  "Wesley 4",
-			Email: "wes4@wes.com",
+			Id:    "4",
+			Name:  "Antônio",
+			Email: "antonio@email.com",
 		},
 		&pb.User{
-			Id:    "w5",
-			Name:  "Wesley 5",
-			Email: "wes5@wes.com",
+			Id:    "5",
+			Name:  "Francisca",
+			Email: "francisca@email.com",
 		},
 	}
 
@@ -113,36 +117,36 @@ func AddUsers(client pb.UserServiceClient) {
 
 func AddUserStreamBoth(client pb.UserServiceClient) {
 
-	stream, err := client.AddUserStreamBoth(context.Background())
+	stream, err := client.AddUsersStreamBoth(context.Background())
 	if err != nil {
 		log.Fatalf("Error creating request: %v", err)
 	}
 
 	reqs := []*pb.User{
 		&pb.User{
-			Id:    "w1",
-			Name:  "Wesley",
-			Email: "wes@wes.com",
+			Id:    "1",
+			Name:  "João",
+			Email: "joao@email.com",
 		},
 		&pb.User{
-			Id:    "w2",
-			Name:  "Wesley 2",
-			Email: "wes2@wes.com",
+			Id:    "2",
+			Name:  "Maria",
+			Email: "maria@email.com",
 		},
 		&pb.User{
-			Id:    "w3",
-			Name:  "Wesley 3",
-			Email: "wes3@wes.com",
+			Id:    "3",
+			Name:  "José",
+			Email: "jose@email.com",
 		},
 		&pb.User{
-			Id:    "w4",
-			Name:  "Wesley 4",
-			Email: "wes4@wes.com",
+			Id:    "4",
+			Name:  "Antônio",
+			Email: "antonio@email.com",
 		},
 		&pb.User{
-			Id:    "w5",
-			Name:  "Wesley 5",
-			Email: "wes5@wes.com",
+			Id:    "5",
+			Name:  "Francisca",
+			Email: "francisca@email.com",
 		},
 	}
 
@@ -167,11 +171,10 @@ func AddUserStreamBoth(client pb.UserServiceClient) {
 				log.Fatalf("Error receiving data: %v", err)
 				break
 			}
-			fmt.Printf("Recebendo user %v com status: %v\n", res.GetUser().GetName(), res.GetStatus())
+			fmt.Printf("Recebendo user %v com status: %v\n", res.GetUser(), res.GetStatus())
 		}
 		close(wait)
 	}()
 
 	<-wait
-
 }

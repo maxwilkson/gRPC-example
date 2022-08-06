@@ -7,13 +7,15 @@ import (
 	"log"
 	"time"
 
-	"github.com/codeedu/fc2-grpc/pb"
+	"github.com/maxwilkson/grpc-example/pb"
 )
 
-// type UserServiceServer interface {
-// 	AddUser(context.Context, *User) (*User, error)
-// 	mustEmbedUnimplementedUserServiceServer()
-//  AddUserVerbose(ctx context.Context, in *User, opts ...grpc.CallOption) (UserService_AddUserVerboseClient, error)
+// UserServiceClient is the client API for UserService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+// type UserServiceClient interface {
+// 	AddUser(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
+// 	AddUserVerbose(ctx context.Context, in *User, opts ...grpc.CallOption) (UserService_AddUserVerboseClient, error)
 // 	AddUsers(ctx context.Context, opts ...grpc.CallOption) (UserService_AddUsersClient, error)
 // }
 
@@ -27,7 +29,7 @@ func NewUserService() *UserService {
 
 func (*UserService) AddUser(ctx context.Context, req *pb.User) (*pb.User, error) {
 
-	// Insert - Database
+	//insert to database
 	fmt.Println(req.Name)
 
 	return &pb.User{
@@ -85,11 +87,13 @@ func (*UserService) AddUsers(stream pb.UserService_AddUsersServer) error {
 
 	for {
 		req, err := stream.Recv()
+
 		if err == io.EOF {
 			return stream.SendAndClose(&pb.Users{
 				User: users,
 			})
 		}
+
 		if err != nil {
 			log.Fatalf("Error receiving stream: %v", err)
 		}
@@ -99,19 +103,19 @@ func (*UserService) AddUsers(stream pb.UserService_AddUsersServer) error {
 			Name:  req.GetName(),
 			Email: req.GetEmail(),
 		})
+
 		fmt.Println("Adding", req.GetName())
-
 	}
-
 }
 
-func (*UserService) AddUserStreamBoth(stream pb.UserService_AddUserStreamBothServer) error {
+func (*UserService) AddUsersStreamBoth(stream pb.UserService_AddUsersStreamBothServer) error {
 
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
 			return nil
 		}
+
 		if err != nil {
 			log.Fatalf("Error receiving stream from the client: %v", err)
 		}
@@ -120,8 +124,10 @@ func (*UserService) AddUserStreamBoth(stream pb.UserService_AddUserStreamBothSer
 			Status: "Added",
 			User:   req,
 		})
+
 		if err != nil {
 			log.Fatalf("Error sending stream to the client: %v", err)
 		}
 	}
+
 }
